@@ -1,4 +1,5 @@
 import type { Rule, RuleConfig } from '../rules/types.ts';
+import type { IgnorePredicate } from '../ignores.ts';
 
 /**
  * User-facing configuration for commit-sentinel.
@@ -50,6 +51,24 @@ export interface UserConfig {
    * collide with built-in rules or with each other.
    */
   plugins?: Rule[];
+  /**
+   * When `false`, disables the built-in ignore patterns for git-generated
+   * commit messages (merge, revert/reapply, `fixup!`/`squash!`/`amend!`).
+   *
+   * Defaults to `true`: validation short-circuits to valid for messages git
+   * writes itself, so `git revert` and merge commits pass on every preset.
+   */
+  defaultIgnores?: boolean;
+  /**
+   * Custom ignore predicates, additive to the defaults.
+   *
+   * Each receives the full raw commit message and returns `true` to skip
+   * validation entirely. Ignored commits are reported distinctly (see
+   * `ValidationReport.ignored` / `ignoredBy`), never silently dropped.
+   * Predicate names must be unique and must not collide with the built-in
+   * pattern names.
+   */
+  ignores?: ReadonlyArray<IgnorePredicate>;
 }
 
 /**
